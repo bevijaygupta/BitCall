@@ -1,104 +1,67 @@
-<img width="256" height="256" alt="icon_128x128@2x" src="https://github.com/user-attachments/assets/90133f83-b4f6-41c6-aab9-25d0859d2a47" />
+# BitCall
 
-## BitCall for Android
+BitCall is a private, account-free Android app for messaging and voice calls over nearby devices
+and available internet connections.
 
-A decentralized peer-to-peer messaging and calling app with dual transport architecture: local Bluetooth mesh networks for offline communication and internet-based Nostr protocol for global reach. No accounts, no phone numbers, no central servers.
+It is designed around a simple idea: people should be able to communicate without a phone
+number, SIM card, recharge, or centralized account.
 
-BitCall is the product name for this Android app. It preserves protocol compatibility with the existing bitchat ecosystem while adding no-recharge, identity-based voice calling.
+## What BitCall Does
 
-This is the BitCall Android application, built on the existing bitchat protocol and fully compatible with the [iOS version](https://github.com/permissionlesstech/bitchat) for cross-platform mesh communication.
+- Sends private messages over encrypted local mesh connections.
+- Discovers nearby devices through Bluetooth Low Energy.
+- Uses Wi-Fi Aware for higher-bandwidth local links when supported.
+- Routes internet communication through Nostr relays.
+- Supports identity-based contacts instead of phone numbers.
+- Provides local channels, media sharing, voice notes, and encrypted conversations.
+- Adds experimental no-number voice calling with Mesh and Internet tiers.
 
-[bitchat.free](http://bitchat.free)
+## Calling Progress
 
-[BitCall on GitHub](https://github.com/bevijaygupta/BitCall)
+The calling work is active and experimental. The current repository contains:
 
-[<img alt="Get it on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>](https://play.google.com/store/apps/details?id=com.bitchat.droid)
+- Call identity and lifecycle state management.
+- Encrypted mesh signaling for ring, accept, reject, acknowledge, and hangup events.
+- Local-first Mesh tier selection with Wi-Fi Aware capability detection.
+- Opus capability detection and experimental full-duplex audio capture/playback.
+- Shared Wi-Fi Aware socket multiplexing for mesh packets and call audio.
+- Microphone audio focus, communication mode, speaker routing, echo cancellation, and noise
+  suppression.
+- Incoming-call UI with lock-screen support.
+- Call foreground service and peer-list call actions.
+- Strict protocol codecs and focused unit tests.
+- Initial Nostr call-signaling codec and mutual-favorite admission foundation.
 
-## See it in action
+Calling is not production-ready. Real two-device testing is still required for Wi-Fi Aware,
+microphone behavior, teardown, interruptions, and different Android hardware. Internet calling
+still needs its complete signaling integration, WebRTC media engine, STUN/TURN configuration, and
+network failure testing.
 
-<table>
-  <tr>
-    <th>Offline mesh conversation</th>
-    <th>Geohash globe picker</th>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/readme-mesh-chat.png" alt="Active four-peer Bitchat mesh conversation with an image, voice messages, and text messages" width="360"/></td>
-    <td><img src="docs/screenshots/readme-geohash-globe.png" alt="Bitchat geohash location picker showing the whole Earth and geohash grid" width="360"/></td>
-  </tr>
-</table>
+## Important Limits
 
-## License
+- A distant device cannot be reached without a network path.
+- Offline calling works only when devices can reach one another through the local mesh.
+- Wi-Fi availability and data cost depend on the network being used.
+- BitCall is not an emergency-calling replacement.
 
-This project is released into the public domain. See the [LICENSE](LICENSE.md) file for details.
+## Technology
 
-## Calling status
+- Kotlin and Jetpack Compose
+- MVVM with Coroutines and Flow
+- Bluetooth Low Energy mesh networking
+- Wi-Fi Aware local transport
+- Nostr relay transport
+- Noise sessions for encrypted local communication
+- Opus audio for live calling
+- Android foreground services for background call continuity
 
-BitCall calling is under active development. The current repository includes the Phase 1
-foundation and an experimental local calling path:
+## Build
 
-- Identity-based calls with no phone number, SIM, account, or recharge requirement
-- Encrypted call signaling over the existing Noise mesh sessions
-- Local-first tier selection: Wi-Fi Aware mesh when available, with a future internet tier planned
-- Call lifecycle signals: ringing, acceptance, rejection, ringing acknowledgement, and hangup
-- Opus capability detection and experimental full-duplex microphone/playback plumbing
-- Communication audio focus, speaker routing, echo cancellation, noise suppression, and a call
-  foreground service
-- Incoming-call activity with lock-screen support and a call action in the peer list
-- Strict packet codecs, malformed-input rejection, and focused unit tests
+Requirements:
 
-This is not production-ready calling yet. The Wi-Fi Aware path needs two-device testing on real
-hardware, and the internet tier still needs Nostr signaling integration, WebRTC media, STUN/TURN
-configuration, and network failure testing.
-
-## Product boundaries
-
-- BitCall cannot reach a distant phone without some network path. Offline calls work only when
-  devices can reach each other through the local mesh.
-- Free Wi-Fi can provide internet access, but the app cannot guarantee that a network is free,
-  available, or unmetered.
-- BitCall is not an emergency-calling replacement and must not be used for emergency services.
-
-## Features
-
-- **Dual Transport Architecture**: Bluetooth LE mesh for offline messaging, Nostr relays for internet-based messaging
-- **Location-Based Channels**: Geographic chat rooms using geohash coordinates over Nostr relays
-- **Intelligent Message Routing**: Automatically chooses the best transport, with queuing and retry when a peer is unreachable
-- **End-to-End Encryption**: [Noise Protocol](https://noiseprotocol.org) (XX pattern, X25519 + ChaCha20-Poly1305) for private messages over the mesh
-- **Decentralized Mesh Network**: Automatic peer discovery and multi-hop relay over Bluetooth LE (max 7 hops)
-- **Wi-Fi Aware Transport**: Higher-bandwidth local mesh on supported devices
-- **Channel Chats**: Topic-based group messaging with optional password protection (Argon2id + AES-256-GCM)
-- **IRC-Style Commands**: Familiar `/join`, `/msg`, `/who` style interface
-- **Tor Support**: Built-in Tor (Arti) for private internet connectivity
-- **Emergency Wipe**: Triple-tap to instantly clear all data
-- **BitCall Calling**: Experimental no-number voice calling built on the existing identity and
-  mesh architecture
-- **Cross-Platform**: Binary protocol compatible with bitchat on iOS and macOS
-
-## Technical Architecture
-
-### Bluetooth Mesh Network (Offline)
-
-- Direct peer-to-peer within Bluetooth range, multi-hop relay through nearby devices
-- Noise Protocol sessions with forward secrecy; peer identities derived from static keys
-- Compact binary packet format with fragmentation, TTL routing, and deduplication
-- Adaptive duty cycling and connection limits for battery efficiency
-- Foreground service keeps the mesh alive within Android background execution limits
-
-### Nostr Protocol (Internet)
-
-- Global reach via public relays, geohash-based location channels
-- Private messages fall back to Nostr for mutual favorites when the mesh is unavailable
-- Ephemeral keys per geohash area
-
-### Android Stack
-
-- Kotlin, Jetpack Compose (Material 3), MVVM
-- Coroutines and Flow for all networking and state
-- Core components: `MeshForegroundService` (persistent connectivity), `BluetoothMeshService` / `WifiAwareMeshService` (transports), `UnifiedMeshService` (transport selection), `NoiseSessionManager` (encryption sessions), `MessageRouter` (mesh/Nostr routing with outbox retry)
-
-## Building
-
-Requires Android Studio and the Android SDK (API 26+).
+- Android Studio
+- Android SDK API 26 or newer
+- JDK 21 with `javac`
 
 ```bash
 git clone https://github.com/bevijaygupta/BitCall.git
@@ -106,52 +69,54 @@ cd BitCall
 ./gradlew assembleDebug
 ```
 
-Install on a connected device:
+Install a debug build on a connected device:
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-The app requests Bluetooth, location (required for BLE scanning), and notification permissions at runtime.
+The app requests the Bluetooth, nearby-device, microphone, location, Wi-Fi, and notification
+permissions required by the enabled features.
 
-Release APKs and the Android App Bundle can be rebuilt byte-for-byte in the
-pinned Linux container. Maintainers should follow the
-[Android release guide](docs/maintainer-release-guide.md). See
-[Reproducible builds](docs/reproducible-builds.md) for the build trust model
-and public GitHub/Google Play verification procedures.
-
-## Testing
+## Test
 
 ```bash
 # Unit tests
-./gradlew test
+./gradlew testDebugUnitTest
 
 # Lint
-./gradlew lint
+./gradlew lintDebug
 
-# Instrumented tests (requires a device or emulator)
+# Instrumented tests
 ./gradlew connectedAndroidTest
 ```
 
-Note that BLE mesh behavior is difficult to emulate; protocol and session logic is covered by unit tests, while radio-level behavior needs real devices.
+Radio behavior, Wi-Fi Aware links, microphone routing, and call teardown must be tested on real
+devices. Emulators are useful for protocol and UI tests but cannot represent every hardware path.
 
-## Help us build BitCall
+## Contribute
 
-BitCall will become useful through careful testing with real devices, not just code written in a
-single workspace. Contributions are welcome from Android developers, audio/Opus and WebRTC
-engineers, mesh-networking researchers, security reviewers, UX contributors, and people willing
-to test calls on different phones and Wi-Fi Aware chipsets.
+BitCall needs people who can test, review, design, and build. Contributions are welcome from:
 
-Useful ways to help:
+- Android and Kotlin developers
+- Audio, Opus, and WebRTC engineers
+- Mesh networking and security researchers
+- UX and accessibility contributors
+- People testing different Android phones and Wi-Fi Aware chipsets
 
-- Test the current mesh calling path on two compatible Android devices and report reproducible
-  results without sharing private logs, peer IDs, or network details
-- Review the call protocol and threat model in [docs/CALLING_V1.md](docs/CALLING_V1.md)
-- Improve focused unit and instrumented tests, especially for call teardown and malformed input
-- Help implement and review the Phase 2 Nostr signaling path and Phase 3 WebRTC media tier
-- Report bugs and propose focused changes through GitHub Issues and pull requests
+Good first contributions include:
 
-Please read [AGENTS.md](AGENTS.md), [docs/testing-conventions.md](docs/testing-conventions.md), and
-the relevant protocol documentation before contributing. Keep changes small, preserve existing
-mesh/Noise/Nostr compatibility, and never include private device data, credentials, peer IDs, or
-raw logs in issues, tests, commits, or screenshots.
+- Testing a call between two real Android devices.
+- Improving malformed-packet and call-teardown tests.
+- Reviewing [docs/CALLING_V1.md](docs/CALLING_V1.md).
+- Completing Nostr signaling and WebRTC integration.
+- Improving call UI, interruptions, Bluetooth headset routing, and battery behavior.
+- Opening focused bug reports and pull requests.
+
+Before contributing, read [AGENTS.md](AGENTS.md), [docs/testing-conventions.md](docs/testing-conventions.md),
+and the relevant documentation under `docs/`. Never include credentials, private device data,
+peer IDs, or raw logs in issues, tests, commits, or screenshots.
+
+## License
+
+This project is released into the public domain. See [LICENSE.md](LICENSE.md).
