@@ -6,11 +6,11 @@ A decentralized peer-to-peer messaging and calling app with dual transport archi
 
 BitCall is the product name for this Android app. It preserves protocol compatibility with the existing bitchat ecosystem while adding no-recharge, identity-based voice calling.
 
-This is the Android implementation of bitchat, fully protocol-compatible with the [iOS version](https://github.com/permissionlesstech/bitchat) for cross-platform mesh communication.
+This is the BitCall Android application, built on the existing bitchat protocol and fully compatible with the [iOS version](https://github.com/permissionlesstech/bitchat) for cross-platform mesh communication.
 
 [bitchat.free](http://bitchat.free)
 
-[GitHub Releases](https://github.com/permissionlesstech/bitchat-android/releases)
+[BitCall on GitHub](https://github.com/bevijaygupta/BitCall)
 
 [<img alt="Get it on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"/>](https://play.google.com/store/apps/details?id=com.bitchat.droid)
 
@@ -31,6 +31,33 @@ This is the Android implementation of bitchat, fully protocol-compatible with th
 
 This project is released into the public domain. See the [LICENSE](LICENSE.md) file for details.
 
+## Calling status
+
+BitCall calling is under active development. The current repository includes the Phase 1
+foundation and an experimental local calling path:
+
+- Identity-based calls with no phone number, SIM, account, or recharge requirement
+- Encrypted call signaling over the existing Noise mesh sessions
+- Local-first tier selection: Wi-Fi Aware mesh when available, with a future internet tier planned
+- Call lifecycle signals: ringing, acceptance, rejection, ringing acknowledgement, and hangup
+- Opus capability detection and experimental full-duplex microphone/playback plumbing
+- Communication audio focus, speaker routing, echo cancellation, noise suppression, and a call
+  foreground service
+- Incoming-call activity with lock-screen support and a call action in the peer list
+- Strict packet codecs, malformed-input rejection, and focused unit tests
+
+This is not production-ready calling yet. The Wi-Fi Aware path needs two-device testing on real
+hardware, and the internet tier still needs Nostr signaling integration, WebRTC media, STUN/TURN
+configuration, and network failure testing.
+
+## Product boundaries
+
+- BitCall cannot reach a distant phone without some network path. Offline calls work only when
+  devices can reach each other through the local mesh.
+- Free Wi-Fi can provide internet access, but the app cannot guarantee that a network is free,
+  available, or unmetered.
+- BitCall is not an emergency-calling replacement and must not be used for emergency services.
+
 ## Features
 
 - **Dual Transport Architecture**: Bluetooth LE mesh for offline messaging, Nostr relays for internet-based messaging
@@ -43,6 +70,8 @@ This project is released into the public domain. See the [LICENSE](LICENSE.md) f
 - **IRC-Style Commands**: Familiar `/join`, `/msg`, `/who` style interface
 - **Tor Support**: Built-in Tor (Arti) for private internet connectivity
 - **Emergency Wipe**: Triple-tap to instantly clear all data
+- **BitCall Calling**: Experimental no-number voice calling built on the existing identity and
+  mesh architecture
 - **Cross-Platform**: Binary protocol compatible with bitchat on iOS and macOS
 
 ## Technical Architecture
@@ -72,8 +101,8 @@ This project is released into the public domain. See the [LICENSE](LICENSE.md) f
 Requires Android Studio and the Android SDK (API 26+).
 
 ```bash
-git clone https://github.com/permissionlesstech/bitchat-android.git
-cd bitchat-android
+git clone https://github.com/bevijaygupta/BitCall.git
+cd BitCall
 ./gradlew assembleDebug
 ```
 
@@ -105,3 +134,24 @@ and public GitHub/Google Play verification procedures.
 ```
 
 Note that BLE mesh behavior is difficult to emulate; protocol and session logic is covered by unit tests, while radio-level behavior needs real devices.
+
+## Help us build BitCall
+
+BitCall will become useful through careful testing with real devices, not just code written in a
+single workspace. Contributions are welcome from Android developers, audio/Opus and WebRTC
+engineers, mesh-networking researchers, security reviewers, UX contributors, and people willing
+to test calls on different phones and Wi-Fi Aware chipsets.
+
+Useful ways to help:
+
+- Test the current mesh calling path on two compatible Android devices and report reproducible
+  results without sharing private logs, peer IDs, or network details
+- Review the call protocol and threat model in [docs/CALLING_V1.md](docs/CALLING_V1.md)
+- Improve focused unit and instrumented tests, especially for call teardown and malformed input
+- Help implement and review the Phase 2 Nostr signaling path and Phase 3 WebRTC media tier
+- Report bugs and propose focused changes through GitHub Issues and pull requests
+
+Please read [AGENTS.md](AGENTS.md), [docs/testing-conventions.md](docs/testing-conventions.md), and
+the relevant protocol documentation before contributing. Keep changes small, preserve existing
+mesh/Noise/Nostr compatibility, and never include private device data, credentials, peer IDs, or
+raw logs in issues, tests, commits, or screenshots.
