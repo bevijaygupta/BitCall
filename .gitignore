@@ -8,6 +8,7 @@ build/
 local.properties
 .gradle/
 .jdks/
+.tools/
 .kotlin/
 captures/
 .externalNativeBuild/
